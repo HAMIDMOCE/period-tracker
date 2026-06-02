@@ -3,20 +3,40 @@ from datetime import datetime
 
 class PeriodTracker:
 
-    def __init__(self, last_period_date):
-        self.last_period_date = last_period_date
+    def __init__(self):
+        self.period_dates = []
+
+    def add_period_date(self, date):
+        if not date:
+            return False, "Date cannot be empty."
+
+        if date  in self.period_dates:
+            return False, "This date has already been recorded."
+
+        if self.period_dates and date <= self.period_dates[-1]:
+            return False, "Date must be after the last recorded period."
+
+        self.period_dates.append(date)
+        return True, "Date added successfully."
 
     def __str__(self):
-        return f"Last period date: {self.last_period_date}"
+        if not self.period_dates:
+            return "No period dates recorded."
+
+        result = ""
+        for n, date in enumerate(self.period_dates, start=1):
+            if date == self.period_dates[-1]:
+                result += f"{n}. period date: {date} (Last period date)"
+
+            else:
+                result += f"{n}. period date: {date}\n"
+
+        return result
 
 
 def receive_date(prompt):
     while True:
         user_date = input(prompt).strip()
-
-        if not user_date:
-            print("Date cannot be empty.")
-            continue
 
         try:
             return datetime.strptime(user_date, "%Y-%m-%d").date()
@@ -26,9 +46,27 @@ def receive_date(prompt):
 
 
 def main():
-    last_period_date = receive_date("Enter last period date (YYYY-MM-DD): ")
+    tracker = PeriodTracker()
 
-    tracker = PeriodTracker(last_period_date)
+    first_period_date = receive_date("Enter last period date (YYYY-MM-DD): ")
+    tracker.add_period_date(first_period_date)
+
+    try:
+        number_of_user_dates = int(input('How many additional period dates do you want to add? ').strip())
+
+        for index in range(number_of_user_dates):
+            while True:
+                new_date = receive_date('Enter period date (YYYY-MM-DD): ')
+                status, message = tracker.add_period_date(new_date)
+
+                if status:
+                    print(message)
+                    break
+
+                print(message)
+
+    except ValueError:
+        print('Invalid input.')
 
     print("\n===== Period Tracker =====")
     print(tracker)
