@@ -48,6 +48,17 @@ class PeriodTracker:
         predict_date = last_period_date + timedelta(days=round(average))
         return predict_date
 
+    def calculate_remaining_days(self):
+        predict_date = self.predict_next_period()
+
+        if predict_date is None:
+            return None
+
+        today = datetime.today().date()
+
+        remaining_days = (predict_date - today).days
+        return remaining_days
+
     def __str__(self):
         if not self.period_dates:
             return "No period dates recorded."
@@ -96,6 +107,7 @@ def main():
 
     except ValueError:
         print('Invalid input.')
+        return
 
     print("\n===== Period Tracker =====")
     print(tracker)
@@ -121,6 +133,20 @@ def main():
 
     else:
         print('Not enough data to predict the next period date.')
+
+    remaining_days = tracker.calculate_remaining_days()
+    if remaining_days is not None:
+        if remaining_days > 0:
+            print(f"Days remaining until next period: {remaining_days}")
+
+        elif  remaining_days == 0:
+            print('Your period starts today.')
+
+        else:
+            print(f"The predicted period date was {abs(remaining_days)} days ago.")
+
+    else:
+        print("Not enough data to calculate remaining days.")
 
 
 if __name__ == "__main__":
