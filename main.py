@@ -29,6 +29,15 @@ class PeriodTracker:
 
         return cycles
 
+    def calculate_average_cycle(self):
+        cycles = self.calculate_cycles()
+
+        if not cycles:
+            return None
+
+        average = sum(cycles) / len(cycles)
+        return average
+
     def __str__(self):
         if not self.period_dates:
             return "No period dates recorded."
@@ -88,6 +97,13 @@ def main():
 
     else:
         print('Not enough data to calculate cycle lengths.')
+
+    average = tracker.calculate_average_cycle()
+    if average is not None:
+        print(f"Average cycle length: {average:.1f} days")
+
+    else:
+        print('Not enough data to calculate average cycle.')
 
 
 if __name__ == "__main__":
