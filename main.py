@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class PeriodTracker:
@@ -37,6 +37,16 @@ class PeriodTracker:
 
         average = sum(cycles) / len(cycles)
         return average
+
+    def predict_next_period(self):
+        average = self.calculate_average_cycle()
+        if average is None:
+            return None
+
+        last_period_date = self.period_dates[-1]
+
+        predict_date = last_period_date + timedelta(days=round(average))
+        return predict_date
 
     def __str__(self):
         if not self.period_dates:
@@ -104,6 +114,13 @@ def main():
 
     else:
         print('Not enough data to calculate average cycle.')
+
+    predict_date = tracker.predict_next_period()
+    if predict_date is not None:
+        print(f"Next period is expected on: {predict_date}")
+
+    else:
+        print('Not enough data to predict the next period date.')
 
 
 if __name__ == "__main__":
