@@ -19,6 +19,16 @@ class PeriodTracker:
         self.period_dates.append(date)
         return True, "Date added successfully."
 
+    def calculate_cycles(self):
+        if len(self.period_dates) < 2:
+            return []
+
+        cycles = []
+        for i in range(len(self.period_dates) - 1):
+            cycles.append((self.period_dates[i+1] - self.period_dates[i]).days)
+
+        return cycles
+
     def __str__(self):
         if not self.period_dates:
             return "No period dates recorded."
@@ -70,6 +80,14 @@ def main():
 
     print("\n===== Period Tracker =====")
     print(tracker)
+
+    cycles = tracker.calculate_cycles()
+    if cycles:
+       for n, cycle in enumerate(cycles, start=1):
+           print(f"Cycle {n}: {cycle} days")
+
+    else:
+        print('Not enough data to calculate cycle lengths.')
 
 
 if __name__ == "__main__":
