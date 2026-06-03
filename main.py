@@ -96,6 +96,13 @@ class PeriodTracker:
 
         return result
 
+def display_menu():
+    print("\n===== Period Tracker =====")
+    print("1. Add period date")
+    print("2. View period dates")
+    print("3. Show cycle statistics")
+    print("4. Predict next period")
+    print("5. Save and Exit")
 
 def receive_date(prompt):
     while True:
@@ -112,14 +119,13 @@ def main():
     tracker = PeriodTracker()
     tracker.load_data()
 
-    if not tracker.period_dates:
-        first_period_date = receive_date("Enter last period date (YYYY-MM-DD): ")
-        tracker.add_period_date(first_period_date)
+    while True:
+        display_menu()
 
-    try:
-        number_of_user_dates = int(input('How many additional period dates do you want to add? ').strip())
+        choice = input('Choose an option: ').strip()
 
-        for index in range(number_of_user_dates):
+        if choice == '1':
+            print('===== Add Period Date =====')
             while True:
                 new_date = receive_date('Enter period date (YYYY-MM-DD): ')
                 status, message = tracker.add_period_date(new_date)
@@ -130,50 +136,57 @@ def main():
 
                 print(message)
 
-    except ValueError:
-        print('Invalid input.')
-        return
+        elif choice == '2':
+            print('===== View Period Dates =====')
+            print(tracker)
 
-    print("\n===== Period Tracker =====")
-    print(tracker)
+        elif choice == '3':
+            print('===== Show Cycle Statistics =====')
+            cycles = tracker.calculate_cycles()
+            if cycles:
+                for n, cycle in enumerate(cycles, start=1):
+                    print(f"Cycle {n}: {cycle} days")
 
-    cycles = tracker.calculate_cycles()
-    if cycles:
-       for n, cycle in enumerate(cycles, start=1):
-           print(f"Cycle {n}: {cycle} days")
+            else:
+                print('Not enough data to calculate cycle lengths.')
 
-    else:
-        print('Not enough data to calculate cycle lengths.')
+            average = tracker.calculate_average_cycle()
+            if average is not None:
+                print(f"Average cycle length: {average:.1f} days")
 
-    average = tracker.calculate_average_cycle()
-    if average is not None:
-        print(f"Average cycle length: {average:.1f} days")
+            else:
+                print('Not enough data to calculate average cycle.')
 
-    else:
-        print('Not enough data to calculate average cycle.')
+        elif choice == '4':
+            print('===== Predict Next Period =====')
+            predict_date = tracker.predict_next_period()
+            if predict_date is not None:
+                print(f"Next period is expected on: {predict_date}")
 
-    predict_date = tracker.predict_next_period()
-    if predict_date is not None:
-        print(f"Next period is expected on: {predict_date}")
+            else:
+                print('Not enough data to predict the next period date.')
 
-    else:
-        print('Not enough data to predict the next period date.')
+            remaining_days = tracker.calculate_remaining_days()
+            if remaining_days is not None:
+                if remaining_days > 0:
+                    print(f"Days remaining until next period: {remaining_days}")
 
-    remaining_days = tracker.calculate_remaining_days()
-    if remaining_days is not None:
-        if remaining_days > 0:
-            print(f"Days remaining until next period: {remaining_days}")
+                elif remaining_days == 0:
+                    print('Your period starts today.')
 
-        elif  remaining_days == 0:
-            print('Your period starts today.')
+                else:
+                    print(f"The predicted period date was {abs(remaining_days)} days ago.")
+
+            else:
+                print("Not enough data to calculate remaining days.")
+
+        elif choice == '5':
+            tracker.save_data()
+            print('Good bye.')
+            break
 
         else:
-            print(f"The predicted period date was {abs(remaining_days)} days ago.")
-
-    else:
-        print("Not enough data to calculate remaining days.")
-
-    tracker.save_data()
+            print('Invalid choice.')
 
 if __name__ == "__main__":
     main()
