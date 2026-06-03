@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from pathlib import Path
+import json
 
 
 class PeriodTracker:
@@ -59,6 +61,27 @@ class PeriodTracker:
         remaining_days = (predict_date - today).days
         return remaining_days
 
+    def to_dict(self):
+        return {'period_dates' : [date.isoformat() for date in self.period_dates]}
+
+    def save_data(self):
+        dates = self.to_dict()
+
+        with open('period_data.json', 'w') as file:
+            json.dump(dates, file, indent=4)
+
+    def load_data(self):
+        file_path = Path('period_data.json')
+
+        if not file_path.exists():
+            self.period_dates = []
+            return
+
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        self.period_dates = [datetime.strptime(period_date, '%Y-%m-%d').date() for period_date in data['period_dates']]
+
     def __str__(self):
         if not self.period_dates:
             return "No period dates recorded."
@@ -87,9 +110,11 @@ def receive_date(prompt):
 
 def main():
     tracker = PeriodTracker()
+    tracker.load_data()
 
-    first_period_date = receive_date("Enter last period date (YYYY-MM-DD): ")
-    tracker.add_period_date(first_period_date)
+    if not tracker.period_dates:
+        first_period_date = receive_date("Enter last period date (YYYY-MM-DD): ")
+        tracker.add_period_date(first_period_date)
 
     try:
         number_of_user_dates = int(input('How many additional period dates do you want to add? ').strip())
@@ -148,6 +173,7 @@ def main():
     else:
         print("Not enough data to calculate remaining days.")
 
+    tracker.save_data()
 
 if __name__ == "__main__":
     main()
