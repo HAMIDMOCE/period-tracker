@@ -64,6 +64,16 @@ class PeriodTracker:
     def to_dict(self):
         return {'period_dates' : [date.isoformat() for date in self.period_dates]}
 
+    def delete_period_date(self, index):
+        if not self.period_dates:
+            return False, "No dates to delete."
+
+        if index < 1 or index > len(self.period_dates):
+            return False, "Invalid index."
+
+        removed_date = self.period_dates.pop(index-1)
+        return True, f"{removed_date} deleted successfully."
+
     def save_data(self):
         dates = self.to_dict()
 
@@ -102,7 +112,8 @@ def display_menu():
     print("2. View period dates")
     print("3. Show cycle statistics")
     print("4. Predict next period")
-    print("5. Save and Exit")
+    print("5. Delete period date")
+    print("6. Save and Exit")
 
 def receive_date(prompt):
     while True:
@@ -181,6 +192,19 @@ def main():
                 print("Not enough data to calculate remaining days.")
 
         elif choice == '5':
+            print("===== Delete Period Date =====")
+            print(tracker)
+
+            try:
+                index = int(input('Enter number to delete: ').strip())
+                status, message = tracker.delete_period_date(index)
+
+                print(message)
+
+            except ValueError:
+                print('Invalid input.')
+
+        elif choice == '6':
             tracker.save_data()
             print('Good bye.')
             break
