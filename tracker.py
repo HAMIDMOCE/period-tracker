@@ -88,17 +88,25 @@ class PeriodTracker:
         if index < 1 or index > len(self.period_dates):
             return False, "Invalid index."
 
-        prev_date = self.period_dates[index-2] if index > 1 else None
-        next_date = self.period_dates[index] if index < len(self.period_dates) else None
+        i = index - 1
 
-        if prev_date and new_date <= prev_date:
-            return False, "New date must be after previous date."
+        prev_date = self.period_dates[i-1] if i > 0 else None
+        next_date = self.period_dates[i+1] if i < len(self.period_dates) - 1 else None
 
-        if next_date and new_date >= next_date:
-            return False, "New date must be before next date."
+        if prev_date and next_date:
+            if not (prev_date < new_date < next_date):
+                return False, "New date must be between previous and next date."
 
-        self.period_dates[index-1] = new_date
-        return True, "date edited successfully."
+        elif prev_date and not next_date:
+            if new_date <= prev_date:
+                return False, "New date must be after previous date."
+
+        elif not prev_date and next_date:
+            if new_date >= next_date:
+                return False, "New date must be before next date."
+
+        self.period_dates[i] = new_date
+        return True, "Date edited successfully."
 
     def __str__(self):
         if not self.period_dates:

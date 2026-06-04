@@ -34,18 +34,18 @@ def main():
         choice = input('Choose an option: ').strip()
 
         if choice == '1':
-            print('===== Add Period Date =====')
+            print('\n===== Add Period Date =====')
             new_date = receive_date('Enter period date (YYYY-MM-DD): ')
             status, message = tracker.add_period_date(new_date)
 
             print(message)
 
         elif choice == '2':
-            print('===== View Period Dates =====')
+            print('\n===== View Period Dates =====')
             print(tracker)
 
         elif choice == '3':
-            print('===== Show Cycle Statistics =====')
+            print('\n===== Show Cycle Statistics =====')
             cycles = tracker.calculate_cycles()
             if cycles:
                 for n, cycle in enumerate(cycles, start=1):
@@ -62,7 +62,7 @@ def main():
                 print('Not enough data to calculate average cycle.')
 
         elif choice == '4':
-            print('===== Predict Next Period =====')
+            print('\n===== Predict Next Period =====')
             predict_date = tracker.predict_next_period()
             if predict_date is not None:
                 print(f"Next period is expected on: {predict_date}")
@@ -85,7 +85,7 @@ def main():
                 print("Not enough data to calculate remaining days.")
 
         elif choice == '5':
-            print("===== Delete Period Date =====")
+            print("\n===== Delete Period Date =====")
             print(tracker)
 
             try:
